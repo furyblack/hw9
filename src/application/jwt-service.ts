@@ -6,6 +6,11 @@ import {refreshBlackListCollection} from "../db/db";
 const refreshTokenSecret = 'your_refresh_token_secret';
 const refreshTokenExpiration = '20s';  // Время жизни refresh токена
 
+
+//для отслеживания деййствий не авторизованных пользователей
+// const sid = encode(uuid, secret); //jwt
+// cookie.session=sid;
+
 export const jwtService={
 
     async  createAccessToken(user:WithId<UserAccountDBType>){

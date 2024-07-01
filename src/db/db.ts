@@ -10,6 +10,8 @@ import {CommentMongoDbType} from "../types/comment/output-comment-type";
 dotenv.config()
 const mongoUri = process.env.MONGO_URL as string || "mongodb://0.0.0.0:27017" // вытащили из енви строку  подключения
 
+
+
 export const client = new MongoClient(mongoUri);
 const mongoDb = client.db()
 
