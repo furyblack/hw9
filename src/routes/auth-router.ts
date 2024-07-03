@@ -30,6 +30,8 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
     // Отправляем refresh токен в куки и access токен в ответе
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     res.status(200).send({ accessToken: token });
+
+
 });
 
 // Endpoint для обновления токена
