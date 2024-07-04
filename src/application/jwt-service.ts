@@ -2,6 +2,7 @@ import {WithId} from "mongodb";
 import jwt from 'jsonwebtoken';
 import {UserAccountDBType} from "../types/users/inputUsersType";
 import {refreshBlackListCollection} from "../db/db";
+import {randomUUID} from "node:crypto";
 
 const refreshTokenSecret = 'your_refresh_token_secret';
 const refreshTokenExpiration = '20s';  // Время жизни refresh токена
@@ -14,7 +15,8 @@ export const jwtService={
 
     },
     async createRefreshToken(user: WithId<UserAccountDBType>) {
-        return jwt.sign({ userId: user._id }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
+        const deviceId = randomUUID()
+        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
     },
 
     async getUserIdByToken(token:string){

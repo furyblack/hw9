@@ -7,7 +7,7 @@ import {BlogOutputType} from "../types/blogs/output";
 
 export class BlogsService {
 
-//TODO после создания пост сервиса вернуться сюда
+
     static async createPostToBlog(data: CreateNewPostType) {
         const {title, shortDescription, content, blogId} = data
         // Создаем новый пост для конкретного блога

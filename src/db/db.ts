@@ -4,6 +4,7 @@ import { PostMongoDbType} from "../types/posts/output";
 import {Collection, MongoClient} from "mongodb";
 import {BlacklistedTokenType, UserAccountDBType} from "../types/users/inputUsersType";
 import {CommentMongoDbType} from "../types/comment/output-comment-type";
+import {SessionType} from "../types/session/sessionType";
 
 //пытаюсь подключить бд
 
@@ -23,7 +24,7 @@ export const usersCollection: Collection<UserAccountDBType> = mongoDb.collection
 
 export const refreshBlackListCollection: Collection<BlacklistedTokenType> = mongoDb.collection<BlacklistedTokenType>("blacklist")
 
-
+export const sessionCollection: Collection<SessionType> = mongoDb.collection<SessionType>("session")
 export async  function connectMongo (){
     try{
         await client.connect()

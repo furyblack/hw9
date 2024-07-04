@@ -11,6 +11,8 @@ import {
     registrationValidation,
 } from "../middlewares/auth/auth-middleware";
 import { loginzationValidation } from "../validators/user-validators";
+import {SessionService} from "../domain/session-service";
+import jwt from "jsonwebtoken";
 
 export const authRouter = Router({});
 
@@ -26,6 +28,19 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
     // Создаем токены доступа и обновления
     const token = await jwtService.createAccessToken(user);
     const refreshToken = await jwtService.createRefreshToken(user);
+
+    // Декодирование и проверка токена
+    const decoded = jwt.verify(token.split(' ')[1], secretKey) as jwt.JwtPayload;
+
+    //создаю сессию для пользователей
+    const ip = req.ip
+    const title = req.headers //user agent
+    //const lastActiveDate = // из jwt достать last active date и deveice id
+    const lastActiveDate = decoded.lastActiveDate;
+    const deviceId = decoded.deviceId;
+
+    const session = await SessionService.createSession({ip, title, lastActiveDate, deviceId})
+
 
     // Отправляем refresh токен в куки и access токен в ответе
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
