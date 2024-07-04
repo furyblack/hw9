@@ -30,12 +30,12 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
     const refreshToken = await jwtService.createRefreshToken(user);
 
     // Декодирование и проверка токена
+    const secretKey ='sldfjkj32rlk'
     const decoded = jwt.verify(token.split(' ')[1], secretKey) as jwt.JwtPayload;
 
     //создаю сессию для пользователей
-    const ip = req.ip
-    const title = req.headers //user agent
-    //const lastActiveDate = // из jwt достать last active date и deveice id
+    const ip = req.ip!
+    const title = req.headers['user-agent'] as string //user agent   // надо ли to string
     const lastActiveDate = decoded.lastActiveDate;
     const deviceId = decoded.deviceId;
 
