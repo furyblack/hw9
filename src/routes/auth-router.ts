@@ -12,7 +12,7 @@ import {
 } from "../middlewares/auth/auth-middleware";
 import { loginzationValidation } from "../validators/user-validators";
 import {SessionService} from "../domain/session-service";
-import jwt from "jsonwebtoken";
+
 
 export const authRouter = Router({});
 
@@ -30,13 +30,12 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
     const refreshToken = await jwtService.createRefreshToken(user);
 
     // Декодирование и проверка токена
-    const secretKey ='sldfjkj32rlk'
-    const decoded = jwt.verify(token.split(' ')[1], secretKey) as jwt.JwtPayload;
+    const decoded =  await jwtService.getPayload(refreshToken)
 
     //создаю сессию для пользователей
     const ip = req.ip!
     const title = req.headers['user-agent'] as string //user agent   // надо ли as string
-    const lastActiveDate = decoded.lastActiveDate;
+    const lastActiveDate  = new Date(decoded.iat! * 1000);
     const deviceId = decoded.deviceId;
 
     await SessionService.createSession({ip, title, lastActiveDate, deviceId})

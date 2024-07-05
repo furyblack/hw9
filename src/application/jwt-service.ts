@@ -20,6 +20,11 @@ export const jwtService={
         return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
     },
 
+    async getPayload (token: string){
+        return  jwt.decode(token) as jwt.JwtPayload;
+    },
+
+
     async getUserIdByToken(token:string){
         try {
             const result: any = jwt.verify(token, process.env.JWT_SECRET as string)

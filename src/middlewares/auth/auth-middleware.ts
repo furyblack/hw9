@@ -97,10 +97,10 @@ export const authMiddlewareRefresh = async (req: Request, res: Response, next: N
 
     try {
         // Получаем ID пользователя по refresh токену
-        const userId = await jwtService.getUserIdByRefreshToken(refreshToken);
+        const userId = await jwtService.getUserIdByRefreshToken(refreshToken); // доставать не только юзер ай ди но и девайс айди и iat
         // Ищем пользователя в базе данных
         const user = await UsersRepository.findUserById(userId);
-
+//найти сессию и проверить что ласт эктив дейт  = iat
         if (!user) {
             res.sendStatus(401); // Если пользователь не найден, возвращаем 401 (Unauthorized)
             return;
