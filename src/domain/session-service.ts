@@ -1,5 +1,4 @@
 import {SessionType} from "../types/session/sessionType";
-import {WithId} from "mongodb";
 import {SessionRepository} from "../repositories/session-repository";
 
 export class SessionService {

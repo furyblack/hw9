@@ -35,11 +35,11 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
 
     //создаю сессию для пользователей
     const ip = req.ip!
-    const title = req.headers['user-agent'] as string //user agent   // надо ли to string
+    const title = req.headers['user-agent'] as string //user agent   // надо ли as string
     const lastActiveDate = decoded.lastActiveDate;
     const deviceId = decoded.deviceId;
 
-    const session = await SessionService.createSession({ip, title, lastActiveDate, deviceId})
+    await SessionService.createSession({ip, title, lastActiveDate, deviceId})
 
 
     // Отправляем refresh токен в куки и access токен в ответе

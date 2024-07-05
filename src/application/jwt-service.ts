@@ -4,7 +4,8 @@ import {UserAccountDBType} from "../types/users/inputUsersType";
 import {refreshBlackListCollection} from "../db/db";
 import {randomUUID} from "node:crypto";
 
-const refreshTokenSecret = 'your_refresh_token_secret';
+//const refreshTokenSecret = 'your_refresh_token_secret';  было
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'default_refresh_token_secret'; //стало
 const refreshTokenExpiration = '20s';  // Время жизни refresh токена
 
 
