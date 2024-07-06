@@ -14,4 +14,7 @@ export class SessionService {
         });
 
     }
+    static async findSessionByDeviceId(deviceId: string): Promise<SessionType | null> {
+        return await SessionRepository.findSessionByDeviceId(deviceId);
+    }
 }

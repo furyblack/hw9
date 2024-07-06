@@ -7,4 +7,7 @@ export class SessionRepository{
     static async createSession(session:SessionType ){
         await sessionCollection.insertOne(session)
     }
+    static async findSessionByDeviceId(deviceId: string): Promise<SessionType | null> {
+        return await sessionCollection.findOne({ deviceId });
+    }
 }

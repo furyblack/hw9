@@ -51,6 +51,7 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
 // Endpoint для обновления токена
 authRouter.post('/refresh-token', authMiddlewareRefresh, async (req: Request, res: Response) => {
     const oldRefreshToken = req.cookies?.refreshToken;
+    console.log(oldRefreshToken,'123123')
     const user = req.userDto as WithId<UserAccountDBType>;
 
     if (!oldRefreshToken || !user) {
@@ -61,9 +62,7 @@ authRouter.post('/refresh-token', authMiddlewareRefresh, async (req: Request, re
     // Создаем новые токены доступа и обновления
     const newAccessToken = await jwtService.createAccessToken(user);
     const newRefreshToken = await jwtService.createRefreshToken(user);
-
-    // Добавляем старый refresh токен в черный список
-    await jwtService.revokeRefreshToken(oldRefreshToken);
+//TODO обновить дату в сессии
 
     // Отправляем новый refresh токен в куки и новый access токен в ответе
     res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
@@ -77,16 +76,16 @@ authRouter.post('/logout', authMiddlewareRefresh, async (req: Request, res: Resp
     if (!refreshToken) {
         res.sendStatus(401); // Если токен отсутствует, возвращаем 401
         return;
-    }
+    } // удалить сессию -> 204
 
-    try {
-        // Добавляем refresh токен в черный список и удаляем его из куки
-        await jwtService.revokeRefreshToken(refreshToken);
-        res.clearCookie('refreshToken');
-        res.sendStatus(204); // No Content
-    } catch (error) {
-        res.sendStatus(401); // Unauthorized
-    }
+    // try {
+    //     // Добавляем refresh токен в черный список и удаляем его из куки
+    //     await jwtService.revokeRefreshToken(refreshToken);
+    //     res.clearCookie('refreshToken');
+    //     res.sendStatus(204); // No Content
+    // } catch (error) {
+    //     res.sendStatus(401); // Unauthorized
+    // }
 });
 
 // Endpoint для получения информации о текущем пользователе

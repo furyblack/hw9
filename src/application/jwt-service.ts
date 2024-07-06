@@ -1,7 +1,7 @@
 import {WithId} from "mongodb";
 import jwt from 'jsonwebtoken';
 import {UserAccountDBType} from "../types/users/inputUsersType";
-import {refreshBlackListCollection} from "../db/db";
+
 import {randomUUID} from "node:crypto";
 
 //const refreshTokenSecret = 'your_refresh_token_secret';  было
@@ -33,23 +33,15 @@ export const jwtService={
             return null
         }
     },
-    async verifyRefreshToken(token: string) {
-        const blacklistedToken = await refreshBlackListCollection.findOne({ token });
-        if (blacklistedToken) {
-            throw new Error('Token is blacklisted');
-        }
-        return jwt.verify(token, refreshTokenSecret);
-    },
+
 
     async getUserIdByRefreshToken(token: string) {
         try {
-            const result: any = await this.verifyRefreshToken(token);
-            return result.userId;
+            const result = jwt.verify(token, refreshTokenSecret) as any //заменить на нормальный тип payload
+            return result
         } catch (error) {
             return null;
         }
     },
-    async revokeRefreshToken(token: string) {
-        await refreshBlackListCollection.insertOne({ token, blacklistedAt: new Date() });
-    }
+
 }

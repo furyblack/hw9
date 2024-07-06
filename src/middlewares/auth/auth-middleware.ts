@@ -4,6 +4,7 @@ import { UsersRepository } from "../../repositories/users-repository";
 import { usersCollection } from "../../db/db";
 import { body } from "express-validator";
 import { inputValidationMiddleware } from "../inputValidation/input-validation-middleware";
+import {SessionService} from "../../domain/session-service";
 
 // Middleware для базовой аутентификации
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -90,24 +91,34 @@ export const userConfirmedValidator = body("email")
 export const authMiddlewareRefresh = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies?.refreshToken;
 
+
     if (!refreshToken) {
-        res.sendStatus(401); // Если токен отсутствует, возвращаем 401 (Unauthorized)
+        res.sendStatus(401);
         return;
     }
 
     try {
         // Получаем ID пользователя по refresh токену
-        const userId = await jwtService.getUserIdByRefreshToken(refreshToken); // доставать не только юзер ай ди но и девайс айди и iat
-        // Ищем пользователя в базе данных
-        const user = await UsersRepository.findUserById(userId);
-//найти сессию и проверить что ласт эктив дейт  = iat
-        if (!user) {
+        const payload = await jwtService.getUserIdByRefreshToken(refreshToken);
+        if(!payload){
             res.sendStatus(401); // Если пользователь не найден, возвращаем 401 (Unauthorized)
             return;
         }
+        const lastActiveDate  = new Date(payload.iat! * 1000);// доставать не только юзер ай ди но и девайс айди и iat
 
-        req.userDto = user; // Добавляем пользователя в объект запроса
-        next(); // Передаем управление следующему middleware
+        // Ищем пользователя в базе данных
+        const user = await UsersRepository.findUserById(payload.userId);
+        //найти сессию и проверить что ласт эктив дейт  = iat
+        const session = await SessionService.findSessionByDeviceId(payload.deviceId)
+
+
+        if (user && session && session.lastActiveDate.toISOString() === lastActiveDate.toISOString()) {
+            req.userDto = user; // Добавляем пользователя в объект запроса
+            return  next()
+        } else {
+            res.status(401).send({ message: "Сессия не найдена или lastActiveDate не совпадает с iat" });
+        }
+
     } catch (error) {
         res.sendStatus(401); // Если токен протух или неверный, возвращаем 401 (Unauthorized)
     }
