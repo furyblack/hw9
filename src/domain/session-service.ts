@@ -1,5 +1,6 @@
 import {SessionType} from "../types/session/sessionType";
 import {SessionRepository} from "../repositories/session-repository";
+import {sessionCollection} from "../db/db";
 
 export class SessionService {
 
@@ -16,5 +17,9 @@ export class SessionService {
     }
     static async findSessionByDeviceId(deviceId: string): Promise<SessionType | null> {
         return await SessionRepository.findSessionByDeviceId(deviceId);
+    }
+
+    static async deleteSessionByDeviceId(deviceId: string): Promise<void>{
+        await sessionCollection.deleteOne({deviceId})
     }
 }

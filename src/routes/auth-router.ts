@@ -77,6 +77,13 @@ authRouter.post('/logout', authMiddlewareRefresh, async (req: Request, res: Resp
         res.sendStatus(401); // Если токен отсутствует, возвращаем 401
         return;
     } // удалить сессию -> 204
+    // Декодирование и проверка токена
+    const decoded =  await jwtService.getPayload(refreshToken)
+    // const deviceId = decoded.deviceId;
+
+    // Удаляем сессию по deviceId
+    await SessionService.deleteSessionByDeviceId(decoded.deviceId);
+    res.clearCookie('refreshToken');
 
     // try {
     //     // Добавляем refresh токен в черный список и удаляем его из куки
