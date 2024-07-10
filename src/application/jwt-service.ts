@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import {UserAccountDBType} from "../types/users/inputUsersType";
 
 import {randomUUID} from "node:crypto";
+import {JwtPayload} from "../types/session/sessionType";
 
 //const refreshTokenSecret = 'your_refresh_token_secret';  было
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'default_refresh_token_secret'; //стало
@@ -35,9 +36,11 @@ export const jwtService={
     },
 
 
+
+
     async getUserIdByRefreshToken(token: string) {
         try {
-            const result = jwt.verify(token, refreshTokenSecret) as any //заменить на нормальный тип payload
+            const result = jwt.verify(token, refreshTokenSecret) as JwtPayload //заменить на нормальный тип payload ..написал еще один тип и пропиал его тут
             return result
         } catch (error) {
             return null;

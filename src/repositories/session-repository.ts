@@ -10,4 +10,11 @@ export class SessionRepository{
     static async findSessionByDeviceId(deviceId: string): Promise<SessionType | null> {
         return await sessionCollection.findOne({ deviceId });
     }
+
+    static async updateSession(session: SessionType): Promise<void> {
+        await sessionCollection.updateOne(
+            { deviceId: session.deviceId },
+            { $set: {  lastActiveDate: session.lastActiveDate } }
+        );
+    }
 }

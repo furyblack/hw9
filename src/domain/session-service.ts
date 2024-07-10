@@ -1,4 +1,4 @@
-import {SessionType} from "../types/session/sessionType";
+import {SessionType, UpdateSessionType} from "../types/session/sessionType";
 import {SessionRepository} from "../repositories/session-repository";
 import {sessionCollection} from "../db/db";
 
@@ -21,5 +21,19 @@ export class SessionService {
 
     static async deleteSessionByDeviceId(deviceId: string): Promise<void>{
         await sessionCollection.deleteOne({deviceId})
+    }
+
+    static async updateSession(data: UpdateSessionType): Promise<void> {
+        const {lastActiveDate, deviceId} = data;
+
+        // ищу существующую сессию по deviceId
+        const currentSession = await SessionRepository.findSessionByDeviceId(deviceId);
+        if (!currentSession) {
+            throw new Error('Session not found');
+        }
+        // обновляю поля сессии
+        currentSession.lastActiveDate = lastActiveDate;
+        // сохраняем обновления в бд
+        await SessionRepository.updateSession(currentSession);
     }
 }

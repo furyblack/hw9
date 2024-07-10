@@ -51,7 +51,6 @@ authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<L
 // Endpoint для обновления токена
 authRouter.post('/refresh-token', authMiddlewareRefresh, async (req: Request, res: Response) => {
     const oldRefreshToken = req.cookies?.refreshToken;
-    console.log(oldRefreshToken,'123123')
     const user = req.userDto as WithId<UserAccountDBType>;
 
     if (!oldRefreshToken || !user) {
@@ -64,9 +63,18 @@ authRouter.post('/refresh-token', authMiddlewareRefresh, async (req: Request, re
     const newRefreshToken = await jwtService.createRefreshToken(user);
 //TODO обновить дату в сессии
 
+    // Декодирование и проверка токена
+    const decoded =  await jwtService.getPayload(newRefreshToken)
+    //обновляю дату lastActiveDate в сессии
+    const lastActiveDate  = new Date(decoded.iat! * 1000);
+    const deviceId = decoded.deviceId;
+
+    await SessionService.updateSession({ lastActiveDate, deviceId });
+
     // Отправляем новый refresh токен в куки и новый access токен в ответе
     res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
     res.status(200).send({ accessToken: newAccessToken });
+
 });
 
 // Endpoint для выхода пользователя
@@ -84,7 +92,7 @@ authRouter.post('/logout', authMiddlewareRefresh, async (req: Request, res: Resp
     // Удаляем сессию по deviceId
     await SessionService.deleteSessionByDeviceId(decoded.deviceId);
     res.clearCookie('refreshToken');
-
+    res.sendStatus(204)
     // try {
     //     // Добавляем refresh токен в черный список и удаляем его из куки
     //     await jwtService.revokeRefreshToken(refreshToken);
