@@ -20,6 +20,11 @@ export const jwtService={
         const deviceId = randomUUID()
         return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
     },
+    async createRefreshTokenWithDeveceID(user: WithId<UserAccountDBType >, deviceId:string) {
+
+        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
+    },
+    //добавить метод createrefreshtoken с diveceid
 
     async getPayload (token: string){
         return  jwt.decode(token) as jwt.JwtPayload;

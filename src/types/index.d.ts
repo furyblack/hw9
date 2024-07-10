@@ -7,6 +7,7 @@ declare global{
         export interface Request {
             user: CreateNewUserType | null
             userDto: WithId<UserAccountDBType>
+            deviceId: string
         }
     }
 }

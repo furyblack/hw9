@@ -60,7 +60,7 @@ authRouter.post('/refresh-token', authMiddlewareRefresh, async (req: Request, re
 
     // Создаем новые токены доступа и обновления
     const newAccessToken = await jwtService.createAccessToken(user);
-    const newRefreshToken = await jwtService.createRefreshToken(user);
+    const newRefreshToken = await jwtService.createRefreshTokenWithDeveceID(user, req.deviceId );
 //TODO обновить дату в сессии
 
     // Декодирование и проверка токена

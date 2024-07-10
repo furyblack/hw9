@@ -8,6 +8,7 @@ import {QuerySessionRepository} from "../repositories/query-session-repository";
 export const deviceRouter = Router({})
 
 authRouter.get('/devices', authMiddlewareRefresh, async (req: Request, res: Response<SessionType[]>)=>{
-
-    // const activeSessions = await QuerySessionRepository.getAllActiveDevices(req.params.userId)
+    const  user = req.userDto
+    // const activeSessions = await QuerySessionRepository.getAllActiveDevices(user._id)
 })
+

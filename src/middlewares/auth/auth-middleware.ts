@@ -114,6 +114,7 @@ export const authMiddlewareRefresh = async (req: Request, res: Response, next: N
 
         if (user && session && session.lastActiveDate.toISOString() === lastActiveDate.toISOString()) {
             req.userDto = user; // Добавляем пользователя в объект запроса
+            req.deviceId = payload.deviceId
             return  next()
         } else {
             res.status(401).send({ message: "Сессия не найдена или lastActiveDate не совпадает с iat" });
