@@ -17,4 +17,11 @@ export class SessionRepository{
             { $set: {  lastActiveDate: session.lastActiveDate } }
         );
     }
+    static async deleteSessionByDeviceId(deviceId: string): Promise<void> {
+        await sessionCollection.deleteOne({ deviceId });
+    }
+
+    static async getActiveDevices(userId: string): Promise<SessionType[]> {
+        return await sessionCollection.find({ userId }).toArray();
+    }
 }
