@@ -3,7 +3,7 @@ export type SessionType = {
     title: string,
     lastActiveDate: Date,
     deviceId: string,
-
+    userId: string
 }
 
 

@@ -7,7 +7,7 @@ import {JwtPayload} from "../types/session/sessionType";
 
 //const refreshTokenSecret = 'your_refresh_token_secret';  было
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'default_refresh_token_secret'; //стало
-const refreshTokenExpiration = '20s';  // Время жизни refresh токена
+export const refreshTokenExpiration = 20;  // Время жизни refresh токена
 
 
 export const jwtService={
@@ -18,11 +18,12 @@ export const jwtService={
     },
     async createRefreshToken(user: WithId<UserAccountDBType>) {
         const deviceId = randomUUID()
-        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
+        //TODO изучить запись строк
+        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
     },
     async createRefreshTokenWithDeveceID(user: WithId<UserAccountDBType >, deviceId:string) {
 
-        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: refreshTokenExpiration });
+        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
     },
     //добавить метод createrefreshtoken с diveceid
 

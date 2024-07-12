@@ -6,12 +6,13 @@ export class SessionService {
 
 
     static async createSession(data: SessionType ) {
-        const {ip, title, lastActiveDate, deviceId} = data
+        const {ip, title, lastActiveDate, deviceId,userId} = data
         await SessionRepository.createSession({
             ip,
             title,
             lastActiveDate,
-            deviceId
+            deviceId,
+            userId
         });
 
     }

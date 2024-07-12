@@ -19,7 +19,7 @@ app.use('/blogs', blogRoute)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 app.use('/comments', commentRouter)
-app.use('/security/', deviceRouter)
+app.use('/security', deviceRouter)
 
 
 app.delete('/testing/all-data', async (req:Request, res: Response)=>{

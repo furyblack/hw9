@@ -114,6 +114,7 @@ export const authMiddlewareRefresh = async (req: Request, res: Response, next: N
 
         if (user && session && session.lastActiveDate.toISOString() === lastActiveDate.toISOString()) {
             req.userDto = user; // Добавляем пользователя в объект запроса
+            console.log(req.userDto)
             req.deviceId = payload.deviceId
             return  next()
         } else {
