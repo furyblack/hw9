@@ -4,26 +4,29 @@ import {UserAccountDBType} from "../types/users/inputUsersType";
 
 import {randomUUID} from "node:crypto";
 import {JwtPayload} from "../types/session/sessionType";
+import * as crypto from "crypto";
 
 //const refreshTokenSecret = 'your_refresh_token_secret';  было
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'default_refresh_token_secret'; //стало
-export const refreshTokenExpiration = 20;  // Время жизни refresh токена
+export const refreshTokenExpiration = 6000;  // Время жизни refresh токена
 
 
 export const jwtService={
 
     async  createAccessToken(user:WithId<UserAccountDBType>){
-        return jwt.sign({userId: user._id}, process.env.JWT_SECRET as string, {expiresIn: '10s'})
+        // await new Promise(resolve => setTimeout(resolve, 100));
+        return jwt.sign({userId: user._id, noise:crypto.randomUUID()}, process.env.JWT_SECRET as string, {expiresIn: '1000s'})
 
     },
     async createRefreshToken(user: WithId<UserAccountDBType>) {
+        // await new Promise(resolve => setTimeout(resolve, 100));
         const deviceId = randomUUID()
         //TODO изучить запись строк
-        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
+        return jwt.sign({ userId: user._id, deviceId, noise:crypto.randomUUID() }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
     },
     async createRefreshTokenWithDeveceID(user: WithId<UserAccountDBType >, deviceId:string) {
-
-        return jwt.sign({ userId: user._id, deviceId }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
+        // await new Promise(resolve => setTimeout(resolve, 100));
+        return jwt.sign({ userId: user._id, deviceId, noise:crypto.randomUUID() }, refreshTokenSecret, { expiresIn: `${refreshTokenExpiration}s` });
     },
     //добавить метод createrefreshtoken с diveceid
 
