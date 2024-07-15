@@ -115,7 +115,7 @@ authRouter.get('/me', authMiddlewareBearer, async (req: Request, res: Response<C
 });
 
 // Endpoint для регистрации нового пользователя
-authRouter.post('/registration', registrationValidation(), rateLimiterMiddlewave, async (req: Request, res: Response) => {
+authRouter.post('/registration', rateLimiterMiddlewave, registrationValidation(),  async (req: Request, res: Response) => {
     // Создаем нового неподтвержденного пользователя
     const result = await UsersService.createUnconfirmedUser(req.body.login, req.body.email, req.body.password);
     if (!result) {
@@ -136,7 +136,7 @@ authRouter.post('/registration-confirmation', rateLimiterMiddlewave, async (req:
 });
 
 // Endpoint для повторной отправки письма с подтверждением
-authRouter.post('/registration-email-resending', emailResendingValidation(), rateLimiterMiddlewave, async (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending', rateLimiterMiddlewave, emailResendingValidation(),  async (req: Request, res: Response) => {
     const email = req.body.email;
     await UsersService.resendConfirmationEmail(email);
     res.sendStatus(204); // No Content

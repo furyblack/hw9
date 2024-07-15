@@ -6,7 +6,7 @@ import {UserFactory} from "../types/users/User";
 import {UserAccountDBType} from "../types/users/inputUsersType";
 import {nodemailerService} from "./nodemailer-service";
 import {v4 as uuidv4} from "uuid";
-import { add } from 'date-fns';
+import {add} from 'date-fns';
 
 
 export const    UsersService = {
@@ -23,7 +23,7 @@ export const    UsersService = {
     async createUnconfirmedUser(login: string, email: string, password: string): Promise<boolean | null> {
         const newUser = await UserFactory.createUnconfirmedUser({ login, password, email });
         try {
-            await nodemailerService.sendEmail(
+             nodemailerService.sendEmail(
                 newUser.accountData.email,
                 "Registration confirmation",
                 `To finish registration please follow the link below:\nhttps://some-front.com/confirm-registration?code=${newUser.emailConfirmation.confirmationCode}`)
@@ -39,14 +39,12 @@ export const    UsersService = {
         if (!user || !user.emailConfirmation.expirationDate) return false
 
         if (user.emailConfirmation.confirmationCode === code && user.emailConfirmation.expirationDate > new Date()) {
-            let result = await UsersRepository.updateConfirmation(user._id);
-            return result;
+            return await UsersRepository.updateConfirmation(user._id);
         }
         return false;
     },
     async _generateHash(password: string, salt: string){
-        const hash = await bcrypt.hash(password, salt)
-        return hash
+        return await bcrypt.hash(password, salt)
     },
 
     async checkCredentials(loginOrEmail: string, password: string){
@@ -75,7 +73,7 @@ export const    UsersService = {
 
         await UsersRepository.updateConfirmationCode(user!._id, newCode, newExpirationDate);
 
-        await nodemailerService.sendEmail(
+         nodemailerService.sendEmail(
             user!.accountData.email,
             "Registration confirmation",
             `To finish registration please follow the link below:\nhttps://some-front.com/confirm-registration?code=${newCode}`

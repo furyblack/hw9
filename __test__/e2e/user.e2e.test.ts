@@ -57,7 +57,7 @@ describe('users', ()=>{
     })
 
 
-    it('shouldn"t delete user by id wihtout auth ', async ()=>{
+    it('shouldn"t delete user by id without auth ', async ()=>{
         await request(app)
             .delete('/users/' + user!.id)
             .auth("admddin", "qwerfty")
