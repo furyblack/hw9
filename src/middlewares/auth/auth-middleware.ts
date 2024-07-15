@@ -5,6 +5,7 @@ import { usersCollection } from "../../db/db";
 import { body } from "express-validator";
 import { inputValidationMiddleware } from "../inputValidation/input-validation-middleware";
 import {SessionService} from "../../domain/session-service";
+import {Collection} from "mongodb";
 
 // Middleware для базовой аутентификации
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -125,6 +126,12 @@ export const authMiddlewareRefresh = async (req: Request, res: Response, next: N
         res.sendStatus(401); // Если токен протух или неверный, возвращаем 401 (Unauthorized)
     }
 };
+
+const REQUEST_LIMIT = 5 //количество доступных запросов
+const TIME_WINDOW = 10*1000 // 10 сек, время за которое считаю запросы
+export const rateLimiterMiddlewave = async (req:Request, res: Response, next: NextFunction)=>{
+
+}
 
 // Функция для валидации при регистрации
 export const registrationValidation = () => [

@@ -1,3 +1,5 @@
+import {postSortData} from "../posts/output";
+
 export type SessionType = {
     ip: string,
     title: string,
@@ -18,9 +20,10 @@ export type UpdateSessionType ={
     deviceId: string;
 }
 
-export type deviceViewModel = {
+
+
+export type requestCountType = {
     ip: string,
-    title: string,
-    lastActiveDate: string,
-    deviceId: string
+    url: string,
+    date: Date
 }
