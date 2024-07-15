@@ -1,7 +1,7 @@
 import { NextFunction, Response, Request } from 'express';
 import { jwtService } from "../../application/jwt-service";
 import { UsersRepository } from "../../repositories/users-repository";
-import { usersCollection } from "../../db/db";
+import {requestsCountCollection, usersCollection} from "../../db/db";
 import { body } from "express-validator";
 import { inputValidationMiddleware } from "../inputValidation/input-validation-middleware";
 import {SessionService} from "../../domain/session-service";
@@ -127,11 +127,42 @@ export const authMiddlewareRefresh = async (req: Request, res: Response, next: N
     }
 };
 
-const REQUEST_LIMIT = 5 //количество доступных запросов
-const TIME_WINDOW = 10*1000 // 10 сек, время за которое считаю запросы
-export const rateLimiterMiddlewave = async (req:Request, res: Response, next: NextFunction)=>{
+// middleware для RATE LIMIT
+const REQUEST_LIMIT = 5; //количество доступных запросов
+const TIME_WINDOW = 10*1000; // 10 сек, время за которое считаю запросы
+export const rateLimiterMiddlewave = async (req:Request, res: Response, next: NextFunction) => {
+    const ip = req.ip!.toString()
+    const url = req.originalUrl
+    const currentTime = new Date()
+    try {
+        //записываем текущий request в коллекцию
+        await requestsCountCollection.insertOne({
+            ip,
+            url,
+            date: currentTime
+        })
+        //вычисляем время начала окна
+        const windowStartTime = new Date(currentTime.getTime()-TIME_WINDOW)
 
+        //считаем количество запросов за временное окно
+        const requestCount = await requestsCountCollection.countDocuments({
+            ip,
+            url,
+            date: { $gte: windowStartTime}
+        })
+
+        //проверяем превышает ли количество requestov указанный лимит
+        if(requestCount > REQUEST_LIMIT){
+            return res.status(429).send('too many requests')
+        }else{
+            return next()
+        }
+    }catch (error){
+        console.error('error rate limit', error)
+        res.status(500).send('server error')
+    }
 }
+
 
 // Функция для валидации при регистрации
 export const registrationValidation = () => [

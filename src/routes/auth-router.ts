@@ -7,7 +7,7 @@ import { WithId } from "mongodb";
 import { CurrentUserType } from "../types/users/outputUserType";
 import {
     authMiddlewareBearer, authMiddlewareRefresh,
-    emailResendingValidation,
+    emailResendingValidation, rateLimiterMiddlewave,
     registrationValidation,
 } from "../middlewares/auth/auth-middleware";
 import { loginzationValidation } from "../validators/user-validators";
@@ -17,7 +17,7 @@ import {SessionService} from "../domain/session-service";
 export const authRouter = Router({});
 
 // Endpoint для входа пользователя
-authRouter.post('/login', loginzationValidation(), async (req: RequestWithBody<LoginUserType>, res: Response) => {
+authRouter.post('/login', loginzationValidation(), rateLimiterMiddlewave, async (req: RequestWithBody<LoginUserType>, res: Response) => {
     // Проверяем учетные данные пользователя
     const user: WithId<UserAccountDBType> | null = await UsersService.checkCredentials(req.body.loginOrEmail, req.body.password);
     if (!user) {
@@ -115,7 +115,7 @@ authRouter.get('/me', authMiddlewareBearer, async (req: Request, res: Response<C
 });
 
 // Endpoint для регистрации нового пользователя
-authRouter.post('/registration', registrationValidation(), async (req: Request, res: Response) => {
+authRouter.post('/registration', registrationValidation(), rateLimiterMiddlewave, async (req: Request, res: Response) => {
     // Создаем нового неподтвержденного пользователя
     const result = await UsersService.createUnconfirmedUser(req.body.login, req.body.email, req.body.password);
     if (!result) {
@@ -126,7 +126,7 @@ authRouter.post('/registration', registrationValidation(), async (req: Request, 
 });
 
 // Endpoint для подтверждения регистрации по коду
-authRouter.post('/registration-confirmation', async (req: Request, res: Response) => {
+authRouter.post('/registration-confirmation', rateLimiterMiddlewave, async (req: Request, res: Response) => {
     const result = await UsersService.confirmEmail(req.body.code);
     if (!result) {
         res.status(400).send({ errorsMessages: [{ message: 'пользователь уже подтвержден', field: "code" }] });
@@ -136,7 +136,7 @@ authRouter.post('/registration-confirmation', async (req: Request, res: Response
 });
 
 // Endpoint для повторной отправки письма с подтверждением
-authRouter.post('/registration-email-resending', emailResendingValidation(), async (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending', emailResendingValidation(), rateLimiterMiddlewave, async (req: Request, res: Response) => {
     const email = req.body.email;
     await UsersService.resendConfirmationEmail(email);
     res.sendStatus(204); // No Content
