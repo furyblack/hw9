@@ -1,13 +1,6 @@
 import request from "supertest";
 import {app} from "../../src/settings";
 
-
-const incorrectUserData = {
-    login: "",
-    password: "",
-    email: ""
-};
-
 const userCreateData = {
     login: "testtt",
     password: "testtt34",
@@ -16,8 +9,6 @@ const userCreateData = {
 
 let user;
 let firstRefreshToken: any;
-let thirdRefreshToken: any
-
 
 describe('/auth', () => {
     beforeAll(async () => {
@@ -129,25 +120,22 @@ describe('/auth', () => {
             .expect(204);
 
         //провермяем что сессия удалена
-        const sessionsResponseAfterDeletion = await request(app)
-            .get('/security/devices')
+        const deletingSession  =  await request(app)
+            .get(`/security/devices/`)
             .set('Cookie', `refreshToken=${activeSessionToken}`)
             .expect(200);
+        const deletedSessionIndex = deletingSession.body.findIndex((s: {deviceId:string})=>s.deviceId === deviceId)
+        expect(deletedSessionIndex).toBe(-1)
 
-        // Ожидаем, что в списке нет сессии с deviceId, которую мы удалили
-        interface Session {
-            deviceId: string;
-        }
+        //пытаемся удалить несуществующую сессию
+        await request(app)
+            .delete(`/security/devices/${deviceId}`)
+            .set('Cookie', `refreshToken=${activeSessionToken}`)
+            .expect(404);
 
-        const deletedSession = (sessionsResponseAfterDeletion.body as Session[]).find(
-            (session: Session) => session.deviceId === deviceId
-        );
-        expect(deletedSession).toBeUndefined();
     });
 })
-//после разделения токена
-// 1 запросить сессии должна быть одна
-// 2) второй логин появляется вторая
-// 3) логаут проверка что сессй стало меньше
-// 3) снова логин и удаляем сессию по ай ди смотрим что осталась 1 сессия
-// 4) логин и удаляем все сессии кроме текущей остальтся должна одна
+
+
+
+//написать интеграционнные тесты на регистарцию
